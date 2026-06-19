@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini-GPT: The Bard</title>
+    <!-- Tailwind CSS for rapid, beautiful styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter for UI, Playfair Display for Shakespeare text -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap"
+        rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f4f5;
+            /* zinc-100 */
+        }
+
+        .shakespeare-font {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Custom scrollbar for the chat window */
+        .chat-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .chat-scroll::-webkit-scrollbar-thumb {
+            background-color: #d4d4d8;
+            border-radius: 20px;
+        }
+
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 1s step-start infinite;
+            color: #52525b;
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="h-screen flex items-center justify-center p-4 sm:p-6 lg:p-8 text-zinc-800">
+
+    <div class="max-w-6xl w-full h-full max-h-[900px] flex flex-col md:flex-row gap-6 bg-transparent">
+
+        <!-- Left Side: Information Panel -->
+        <div class="w-full md:w-1/3 flex flex-col gap-4">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 h-full flex flex-col">
+                <div class="flex items-center gap-3 mb-6">
+                    <div
+                        class="w-12 h-12 rounded-full bg-rose-100 text-rose-800 flex items-center justify-center text-2xl shadow-inner">
+                        🎭
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-zinc-900">Mini-GPT</h1>
+                        <p class="text-sm text-zinc-500">Tiny Shakespeare Dataset</p>
+                    </div>
+                </div>
+
+                <div class="space-y-4 text-sm text-zinc-600 flex-grow">
+                    <p>
+                        Welcome! This chatbot is powered by a custom-built Transformer model, trained from scratch on
+                        the works of William Shakespeare.
+                    </p>
+                    <div class="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl">
+                        <h3 class="font-semibold mb-1 flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Why does it sound funny?
+                        </h3>
+                        <p class="text-xs leading-relaxed">
+                            This model predicts text <strong>character-by-character</strong>, not word-by-word. Because
+                            the dataset is tiny and it only looks at the next letter, it often invents non-existent
+                            words and sounds like a babbling child trying to speak Old English!
+                        </p>
+                    </div>
+                    <p>
+                        It was built to test and visualize core Transformer architecture concepts, focusing on sequence
+                        modeling and self-attention at the most granular (character) level.
+                    </p>
+                </div>
+
+                <div class="pt-4 border-t border-zinc-100 mt-auto">
+                    <p class="text-xs text-zinc-400 text-center">
+                        Frontend Interface • Character-Level Prediction
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Chat Interface -->
+        <div
+            class="w-full md:w-2/3 bg-white rounded-2xl shadow-xl border border-zinc-200 flex flex-col overflow-hidden relative">
+
+            <!-- Chat Header -->
+            <div class="bg-white border-b border-zinc-100 px-6 py-4 flex items-center justify-between z-10 shadow-sm">
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <div
+                            class="w-10 h-10 rounded-full bg-zinc-100 border border-zinc-200 flex items-center justify-center text-lg">
+                            📜
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full">
+                        </div>
+                    </div>
+                    <div>
+                        <h2 class="font-semibold text-zinc-800">The Bard Bot</h2>
+                        <p class="text-xs text-green-600 font-medium">Online • Character Gen Active</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat Messages Area -->
+            <div id="chat-container"
+                class="flex-1 p-6 overflow-y-auto chat-scroll flex flex-col gap-5 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMiIgY3k9IjIiIHI9IjIiIGZpbGw9IiNlN2U3ZTciIGZpbGwtb3BhY2l0eT0iMC40Ii8+PC9zdmc+')]">
+
+                <!-- Welcome Message -->
+                <div class="flex flex-col gap-1 items-start max-w-[80%]">
+                    <div
+                        class="bg-zinc-100 border border-zinc-200 text-zinc-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm shakespeare-font text-lg">
+                        Good morrow! Speak thy mind, and I shall answer with character-by-character gibberish from my
+                        tiny brain.
+                    </div>
+                    <span class="text-[10px] text-zinc-400 ml-1">The Bard • System</span>
+                </div>
+
+            </div>
+
+            <!-- Typing Indicator (Hidden by default) -->
+            <div id="typing-indicator"
+                class="hidden px-6 pb-2 text-xs font-medium text-zinc-400 italic flex items-center gap-2">
+                <svg class="animate-spin h-3 w-3 text-zinc-400" xmlns="http://www.w3.org/2000/svg" fill="none"
+                    viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                    </path>
+                </svg>
+                The Bard is predicting characters...
+            </div>
+
+            <!-- Chat Input Area -->
+            <div class="p-4 bg-white border-t border-zinc-100">
+                <form id="chat-form" class="flex items-center gap-2 relative">
+                    <input type="text" id="user-input" placeholder="Type a prompt for the model..."
+                        class="w-full bg-zinc-50 border border-zinc-200 text-zinc-800 text-sm rounded-full px-5 py-3.5 focus:outline-none focus:ring-2 focus:ring-rose-200 focus:border-rose-400 transition-all"
+                        autocomplete="off">
+                    <button type="submit"
+                        class="absolute right-2 bg-zinc-900 hover:bg-zinc-800 text-white p-2 rounded-full transition-transform active:scale-95 flex items-center justify-center shadow-md">
+                        <svg class="w-5 h-5 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const chatForm = document.getElementById('chat-form');
+        const userInput = document.getElementById('user-input');
+        const chatContainer = document.getElementById('chat-container');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Simulated gibberish responses to represent the untrained character-level model
+        const gibberishResponses = [
+            "ROMEO:\nO thour art a falstaf to the cometh, and the with shall the to be...",
+            "What he shall so be the mands of the sir?",
+            "KING:\nI have not the world, and thou art a bawd, and a base, the with...",
+            "A bear, a boars, and a sours of the pring! Forsooth!",
+            "My lord, I am not a stree, but a fald of the thour...",
+            "JULIET:\nWherefore art thou roming? The windes are blowth to the mands.",
+            "Exeunt.\n\nEnter the KING and a solider of the with...",
+            "Nay, I shall not be the sir of the with!"
+        ];
+
+        chatForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            // 1. Add User Message
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            // 2. Show loading/predicting state
+            typingIndicator.classList.remove('hidden');
+            scrollToBottom();
+
+            // 3. Simulate Backend Request Delay
+            // Replace this timeout with your actual fetch() call to your backend API
+            // Example:
+            // 3. Make the Backend Request
+            try {
+                const response = await fetch('http://127.0.0.1:8000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json' // Crucial: Tell FastAPI to expect JSON
+                    },
+                    // Change "prompt" to "message" to match your Pydantic ChatRequest model
+                    body: JSON.stringify({ message: text })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                // Change "data.text" to "data.reply" to match your Pydantic ChatResponse model
+                const generatedText = data.reply;
+
+                // 4. Handle the UI updates
+                typingIndicator.classList.add('hidden');
+
+                // Stream the actual model response instead of the gibberish array
+                streamBotMessage(generatedText);
+
+            } catch (error) {
+                console.error("Failed to connect to the chatbot API:", error);
+                typingIndicator.classList.add('hidden');
+
+                // Optional: Show a graceful error message in the chat UI
+                streamBotMessage("Sorry, I'm having trouble connecting to the server right now.");
+            }
+        });
+
+        function addMessage(text, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex flex-col gap-1 max-w-[80%] ${sender === 'user' ? 'self-end items-end' : 'self-start items-start'}`;
+
+            const bubble = document.createElement('div');
+
+            if (sender === 'user') {
+                bubble.className = 'bg-zinc-800 text-white px-5 py-3 rounded-2xl rounded-tr-sm shadow-sm text-sm';
+                bubble.textContent = text;
+
+                const label = document.createElement('span');
+                label.className = 'text-[10px] text-zinc-400 mr-1';
+                label.textContent = 'You';
+
+                messageDiv.appendChild(bubble);
+                messageDiv.appendChild(label);
+            } else {
+                // This branch is used for instant bot messages if needed,
+                // but we primarily use streamBotMessage for the bot.
+                bubble.className = 'bg-zinc-100 border border-zinc-200 text-zinc-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm shakespeare-font text-lg whitespace-pre-wrap';
+                bubble.textContent = text;
+
+                const label = document.createElement('span');
+                label.className = 'text-[10px] text-zinc-400 ml-1';
+                label.textContent = 'The Bard • Simulated';
+
+                messageDiv.appendChild(bubble);
+                messageDiv.appendChild(label);
+            }
+
+            chatContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+
+        // Simulates the character-by-character prediction of your mini-GPT
+        function streamBotMessage(fullText) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `flex flex-col gap-1 max-w-[80%] self-start items-start`;
+
+            const bubble = document.createElement('div');
+            // Adding 'typing-cursor' class for the blinking cursor effect
+            bubble.className = 'bg-zinc-100 border border-zinc-200 text-zinc-800 px-5 py-3 rounded-2xl rounded-tl-sm shadow-sm shakespeare-font text-lg whitespace-pre-wrap typing-cursor transition-all';
+
+            const label = document.createElement('span');
+            label.className = 'text-[10px] text-zinc-400 ml-1';
+            label.textContent = 'The Bard • Character Gen';
+
+            messageDiv.appendChild(bubble);
+            messageDiv.appendChild(label);
+            chatContainer.appendChild(messageDiv);
+
+            let i = 0;
+            // The interval speed (e.g., 30ms) simulates how fast the transformer predicts the next character
+            const typingInterval = setInterval(() => {
+                if (i < fullText.length) {
+                    bubble.textContent += fullText.charAt(i);
+                    i++;
+                    scrollToBottom();
+                } else {
+                    clearInterval(typingInterval);
+                    // Remove cursor when done
+                    bubble.classList.remove('typing-cursor');
+                }
+            }, 30); // 30ms per character - adjust to match your model's inference speed
+        }
+
+        function scrollToBottom() {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
+</body>
+
+</html>

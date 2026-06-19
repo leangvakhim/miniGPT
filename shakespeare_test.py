@@ -7,7 +7,12 @@ model = GPTLanguageModel().to(device)
 model.load_state_dict(torch.load('shakespeare_gpt.pth', map_location=device, weights_only=True))
 model.eval()
 
-context = torch.tensor([encode('\n')], dtype=torch.long).to(device)
+user_prompt = input("Enter your starting text for Shakespeare: ")
+
+if not user_prompt:
+    user_prompt = "\n"
+
+context = torch.tensor([encode(user_prompt)], dtype=torch.long).to(device)
 
 print("Generating text...\n")
 
