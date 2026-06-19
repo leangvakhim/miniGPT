@@ -2,3 +2,7 @@ fastapi
 uvicorn
 pydantic
 torch
+pandas
+numpy
+matplotlib
+seaborn

@@ -207,7 +207,9 @@
             // Example:
             // 3. Make the Backend Request
             try {
-                const response = await fetch('http://127.0.0.1:8000/api/chat', {
+                // const response = await fetch('http://127.0.0.1:8000/api/chat',
+                const response = await fetch('https://vaaakhim/mini-gpt-shakespeare.hf.space/api/chat',
+                {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json' // Crucial: Tell FastAPI to expect JSON
